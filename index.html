@@ -5291,6 +5291,15 @@ function App() {
       fontSize: 11,
       flexShrink: 0
     }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      minWidth: 0,
+      display: "flex",
+      alignItems: "center",
+      gap: 6,
+      overflow: "hidden"
+    }
   }, /*#__PURE__*/React.createElement("button", {
     onClick: () => setScreen("select"),
     style: {
@@ -5305,13 +5314,14 @@ function App() {
       fontFamily: "inherit",
       flexShrink: 0
     }
-  }, "\u2715"), /*#__PURE__*/React.createElement("span", {
+  }, "✕"), /*#__PURE__*/React.createElement("span", {
     style: {
       fontWeight: 900,
       color: "#ffd740",
-      flexShrink: 0
+      flexShrink: 0,
+      whiteSpace: "nowrap"
     }
-  }, G.inning, "\u56DE", half), /*#__PURE__*/React.createElement("span", {
+  }, G.inning, "回", half), /*#__PURE__*/React.createElement("span", {
     style: {
       background: isOurs ? "#1a7a3a" : "#cc2222",
       color: "#fff",
@@ -5319,31 +5329,43 @@ function App() {
       fontSize: 10,
       padding: "2px 7px",
       borderRadius: 100,
-      flexShrink: 0
+      flexShrink: 0,
+      maxWidth: 110,
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
     }
-  }, "\u26A1 ", battingTeam), elapsed && /*#__PURE__*/React.createElement("span", {
+  }, "⚡ ", battingTeam), elapsed && /*#__PURE__*/React.createElement("span", {
     style: {
       fontSize: 9,
       color: "#aac4f0",
-      flexShrink: 0
+      flexShrink: 1,
+      minWidth: 0,
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
     }
-  }, "\u23F1", elapsed), /*#__PURE__*/React.createElement("span", {
+  }, "⏱", elapsed), /*#__PURE__*/React.createElement("span", {
     style: {
       fontWeight: 900,
       color: "#fff",
       fontSize: 14,
-      flexShrink: 0
+      flexShrink: 0,
+      whiteSpace: "nowrap"
     }
   }, G.ourScore, /*#__PURE__*/React.createElement("span", {
     style: {
       color: "#aac4f0",
       fontSize: 11
     }
-  }, "-"), G.oppScore), /*#__PURE__*/React.createElement("span", {
+  }, "-"), G.oppScore)), /*#__PURE__*/React.createElement("div", {
     style: {
-      flex: 1
+      display: "flex",
+      alignItems: "center",
+      gap: 4,
+      flexShrink: 0
     }
-  }), /*#__PURE__*/React.createElement("button", {
+  }, /*#__PURE__*/React.createElement("button", {
     onClick: () => setCorrectSheet(true),
     style: {
       background: "#c62828",
@@ -5356,11 +5378,7 @@ function App() {
       fontWeight: 900,
       cursor: "pointer"
     }
-  }, "\u26A0\uFE0F\u4FEE\u6B63"), /*#__PURE__*/React.createElement("span", {
-    style: {
-      flex: 1
-    }
-  }), /*#__PURE__*/React.createElement("button", {
+  }, "⚠️修正"), /*#__PURE__*/React.createElement("button", {
     onClick: undoAction,
     style: {
       background: "none",
@@ -5373,7 +5391,7 @@ function App() {
       cursor: "pointer",
       fontFamily: "inherit"
     }
-  }, "\u21A9"), /*#__PURE__*/React.createElement("button", {
+  }, "↩"), /*#__PURE__*/React.createElement("button", {
     onClick: () => {
       pushG(G);
       showToast("💾 保存しました");
@@ -5389,7 +5407,7 @@ function App() {
       cursor: "pointer",
       fontFamily: "inherit"
     }
-  }, "\uD83D\uDCBE"), /*#__PURE__*/React.createElement("button", {
+  }, "💾"), /*#__PURE__*/React.createElement("button", {
     onClick: () => setMenuSheet(true),
     style: {
       background: "none",
@@ -5401,7 +5419,7 @@ function App() {
       cursor: "pointer",
       fontFamily: "inherit"
     }
-  }, "\u2630")), toast && /*#__PURE__*/React.createElement("div", {
+  }, "☰"))), toast && /*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       top: 60,
