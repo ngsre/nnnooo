@@ -2860,20 +2860,35 @@ function ConfigPanel({
       fontSize: 13,
       fontWeight: 700
     }
-  }, "\u5148\u653B/\u5F8C\u653B"), /*#__PURE__*/React.createElement("button", {
-    onClick: () => setBf(b => !b),
+  }, "\u5148\u653B/\u5F8C\u653B"), /*#__PURE__*/React.createElement("div", {
+    style: { display: "flex", gap: 4 }
+  }, /*#__PURE__*/React.createElement("button", {
+    onClick: () => setBf(true),
     style: {
       background: bf ? "#1a7a3a" : "#f0f2f5",
-      border: `2px solid ${bf ? "#1a7a3a" : "#b0bbc8"}`,
+      border: `2px solid ${bf ? "#1a7a3a" : "#d0d7e0"}`,
       borderRadius: 100,
-      padding: "4px 12px",
-      color: bf ? "#fff" : "#6b7a8d",
+      padding: "4px 14px",
+      color: bf ? "#fff" : "#9aa5b4",
       fontFamily: "inherit",
       fontSize: 11,
       fontWeight: 900,
       cursor: "pointer"
     }
-  }, bf ? "先攻" : "後攻"))), /*#__PURE__*/React.createElement("div", {
+  }, bf ? "✓先攻" : "先攻"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => setBf(false),
+    style: {
+      background: !bf ? "#cc2222" : "#f0f2f5",
+      border: `2px solid ${!bf ? "#cc2222" : "#d0d7e0"}`,
+      borderRadius: 100,
+      padding: "4px 14px",
+      color: !bf ? "#fff" : "#9aa5b4",
+      fontFamily: "inherit",
+      fontSize: 11,
+      fontWeight: 900,
+      cursor: "pointer"
+    }
+  }, !bf ? "✓後攻" : "後攻"))), /*#__PURE__*/React.createElement("div", {
     style: {
       background: "#fff",
       border: "1.5px solid #d0d7e0",
@@ -4878,7 +4893,13 @@ function App() {
       borderLeft: "1px solid rgba(255,255,255,.07)"
     }
   }, "R")), (() => {
-    const rows = [[G.ourTeam, G.innOur, G.ourScore, isOurs, 0], [G.oppTeam, G.innOpp, G.oppScore, !isOurs, 1]];
+    const topRow = G.batFirst
+      ? [G.ourTeam, G.innOur, G.ourScore, isOurs, 0]
+      : [G.oppTeam, G.innOpp, G.oppScore, !isOurs, 0];
+    const btmRow = G.batFirst
+      ? [G.oppTeam, G.innOpp, G.oppScore, !isOurs, 1]
+      : [G.ourTeam, G.innOur, G.ourScore, isOurs, 1];
+    const rows = [topRow, btmRow];
     return rows.map(([team, inn, sc, isBatting, ri]) => /*#__PURE__*/React.createElement("div", {
       key: ri,
       style: {
@@ -4896,9 +4917,14 @@ function App() {
         color: isBatting ? "#ffd740" : ri === 0 ? "#aaff70" : "#7ec8ff",
         flexShrink: 0,
         display: "flex",
-        alignItems: "center",
-        gap: 4
+        flexDirection: "column",
+        justifyContent: "center",
+        gap: 1
       }
+    }, /*#__PURE__*/React.createElement("div", {
+      style: { fontSize: 7, color: "rgba(255,255,255,.45)", fontWeight: 700, letterSpacing: ".05em" }
+    }, ri === 0 ? "先攻" : "後攻"), /*#__PURE__*/React.createElement("div", {
+      style: { display: "flex", alignItems: "center", gap: 3 }
     }, isBatting && /*#__PURE__*/React.createElement("span", {
       style: {
         width: 5,
@@ -4909,7 +4935,7 @@ function App() {
         boxShadow: "0 0 6px #ffd740",
         flexShrink: 0
       }
-    }), String(team).slice(0, 5)), /*#__PURE__*/React.createElement("div", {
+    }), String(team).slice(0, 5))), /*#__PURE__*/React.createElement("div", {
       style: {
         flex: 1,
         display: "flex",
