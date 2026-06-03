@@ -3463,17 +3463,18 @@ function ConfigPanel({
     }
   }, desc)))))));
 }
+
 // ===== SETUP WIZARD =====
 const POS_DATA_W = [
-  { id:"1", lbl:"謚・, x:110, y:112, title:"謚墓焔" },
-  { id:"2", lbl:"謐・, x:110, y:170, title:"謐墓焔" },
-  { id:"3", lbl:"荳", x:163, y:118, title:"荳蝪・ },
-  { id:"4", lbl:"莠・, x:140, y:70,  title:"莠悟｡・ },
-  { id:"5", lbl:"荳・, x:57,  y:118, title:"荳牙｡・ },
-  { id:"6", lbl:"驕・, x:80,  y:70,  title:"驕頑茶" },
-  { id:"7", lbl:"蟾ｦ", x:30,  y:22,  title:"蟾ｦ鄙ｼ" },
-  { id:"8", lbl:"荳ｭ", x:110, y:8,   title:"荳ｭ蝣・ },
-  { id:"9", lbl:"蜿ｳ", x:190, y:22,  title:"蜿ｳ鄙ｼ" },
+  { id:"1", lbl:"投", x:110, y:112, title:"投手" },
+  { id:"2", lbl:"捕", x:110, y:170, title:"捕手" },
+  { id:"3", lbl:"一", x:163, y:118, title:"一塁" },
+  { id:"4", lbl:"二", x:140, y:70,  title:"二塁" },
+  { id:"5", lbl:"三", x:57,  y:118, title:"三塁" },
+  { id:"6", lbl:"遊", x:80,  y:70,  title:"遊撃" },
+  { id:"7", lbl:"左", x:30,  y:22,  title:"左翼" },
+  { id:"8", lbl:"中", x:110, y:8,   title:"中堅" },
+  { id:"9", lbl:"右", x:190, y:22,  title:"右翼" },
 ];
 
 function LineupSetupField({ lineup, selectedPos, onTapPos }) {
@@ -3518,8 +3519,8 @@ function SetupWizard({ G, setG, pushG, setScreen, mode }) {
 
   const handleStart = () => {
     const eff = s => s&&s.trim()?s.trim():null;
-    const oppName = eff(opp)||G.oppTeam||"逶ｸ謇・;
-    const pos9 = ["謚・,"謐・,"荳","莠・,"荳・,"驕・,"蟾ｦ","荳ｭ","蜿ｳ"];
+    const oppName = eff(opp)||G.oppTeam||"相手";
+    const pos9 = ["投","捕","一","二","三","遊","左","中","右"];
     const lt = mode==="rematch"&&!eff(opp)
       ? (G.lineupThem||[]).map(p=>({...p,ab:0,hits:0,rbi:0,runs:0,pitchCount:0}))
       : pos9.map((p,i)=>({name:`${oppName}${i+1}`,num:String(i+1),pos:p,ab:0,hits:0,rbi:0,runs:0,pitchCount:0}));
@@ -3527,12 +3528,12 @@ function SetupWizard({ G, setG, pushG, setScreen, mode }) {
       ? (G.benchThem||[]).map(p=>({...p,ab:0,hits:0,rbi:0,runs:0,pitchCount:0}))
       : [10,11,12,13,14,15,16,17].map(n=>({name:`${oppName}${n}`,num:String(n),pos:"",ab:0,hits:0,rbi:0,runs:0,pitchCount:0}));
     const now = new Date().toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"});
-    const newG = {...INIT_G,gameDate:eff(gameDate)||new Date().toISOString().slice(0,10),gameLocation:eff(gameLoc)||G.gameLocation||"",gameStartTime:eff(gameTime)||now,maxInnings:innings,batFirst,ourTeam:G.ourTeam,oppTeam:oppName,lineup,bench,lineupThem:lt,benchThem:bt,scorebookThem:lt.map(()=>({})),scorebook:lineup.map(()=>({})),log:[{t:now,msg:`笞ｾ 隧ｦ蜷磯幕蟋具ｼ・${G.ourTeam} vs ${oppName}`,type:"s"}]};
+    const newG = {...INIT_G,gameDate:eff(gameDate)||new Date().toISOString().slice(0,10),gameLocation:eff(gameLoc)||G.gameLocation||"",gameStartTime:eff(gameTime)||now,maxInnings:innings,batFirst,ourTeam:G.ourTeam,oppTeam:oppName,lineup,bench,lineupThem:lt,benchThem:bt,scorebookThem:lt.map(()=>({})),scorebook:lineup.map(()=>({})),log:[{t:now,msg:`⚾ 試合開始！ ${G.ourTeam} vs ${oppName}`,type:"s"}]};
     setG(newG); pushG(newG); setScreen("staff");
   };
 
   const hdr = (title,onBack) => React.createElement("div",{style:{background:W.navy,padding:"10px 14px",display:"flex",alignItems:"center",gap:10,flexShrink:0}},
-    React.createElement("button",{onClick:onBack,style:{background:"none",border:"1px solid rgba(255,255,255,.3)",borderRadius:8,padding:"4px 10px",color:"rgba(255,255,255,.7)",fontFamily:"inherit",fontSize:12,cursor:"pointer",flexShrink:0}},step===1?"笨・:"竊・謌ｻ繧・),
+    React.createElement("button",{onClick:onBack,style:{background:"none",border:"1px solid rgba(255,255,255,.3)",borderRadius:8,padding:"4px 10px",color:"rgba(255,255,255,.7)",fontFamily:"inherit",fontSize:12,cursor:"pointer",flexShrink:0}},step===1?"✕":"← 戻る"),
     React.createElement("div",{style:{flex:1,fontSize:14,fontWeight:900,color:"#fff"}},title),
     React.createElement("div",{style:{display:"flex",gap:5}},[1,2,3].map(n=>React.createElement("div",{key:n,style:{width:7,height:7,borderRadius:"50%",background:n<=step?W.gold:"rgba(255,255,255,.25)"}})))
   );
@@ -3540,28 +3541,28 @@ function SetupWizard({ G, setG, pushG, setScreen, mode }) {
   const nextBtn=(txt,fn)=>React.createElement("button",{onClick:fn,style:{width:"100%",padding:"14px 0",background:W.green,border:"none",borderRadius:12,color:"#fff",fontFamily:"inherit",fontSize:16,fontWeight:900,cursor:"pointer"}},txt);
 
   if(step===1) return React.createElement("div",{style:{background:W.bg,minHeight:"100vh",display:"flex",flexDirection:"column"}},
-    hdr(`Step 1/3縲隧ｦ蜷郁ｨｭ螳夲ｼ・{mode==="rematch"?"売蜀崎ｩｦ蜷・:"笞ｾ譁ｰ隕剰ｩｦ蜷・}・荏,()=>setScreen("select")),
+    hdr(`Step 1/3　試合設定（${mode==="rematch"?"🔄再試合":"⚾新規試合"}）`,()=>setScreen("select")),
     React.createElement("div",{style:{flex:1,overflowY:"auto",padding:"12px 16px"}},
       React.createElement("div",{style:{background:"#fff",borderRadius:14,padding:"14px 16px",boxShadow:"0 2px 8px rgba(0,0,0,.07)",marginBottom:12}},
-        React.createElement("div",{style:{fontSize:9,fontWeight:900,color:W.gold,letterSpacing:".12em",marginBottom:12}},"搭 隧ｦ蜷域ュ蝣ｱ"),
-        ...[["套 譌･莉・,"date",gameDate,setGameDate],["桃 蝣ｴ謇","text",gameLoc,setGameLoc],["武 髢句ｧ区凾髢・,"time",gameTime,setGameTime]].map(([lbl,type,val,set])=>React.createElement("div",{key:lbl,style:{marginBottom:10}},
+        React.createElement("div",{style:{fontSize:9,fontWeight:900,color:W.gold,letterSpacing:".12em",marginBottom:12}},"📋 試合情報"),
+        ...[["📅 日付","date",gameDate,setGameDate],["📍 場所","text",gameLoc,setGameLoc],["🕐 開始時間","time",gameTime,setGameTime]].map(([lbl,type,val,set])=>React.createElement("div",{key:lbl,style:{marginBottom:10}},
           React.createElement("div",{style:{fontSize:10,fontWeight:800,color:W.gray,marginBottom:4}},lbl),
           React.createElement("input",{type,value:val,onChange:e=>set(e.target.value),style:fi})
         )),
         React.createElement("div",{style:{marginBottom:10}},
-          React.createElement("div",{style:{fontSize:10,fontWeight:800,color:W.gray,marginBottom:4}},"箸 繧､繝九Φ繧ｰ謨ｰ"),
-          React.createElement("select",{value:innings,onChange:e=>setInnings(Number(e.target.value)),style:fi},[5,6,7,9].map(n=>React.createElement("option",{key:n,value:n},`${n}蝗杼)))
+          React.createElement("div",{style:{fontSize:10,fontWeight:800,color:W.gray,marginBottom:4}},"🔢 イニング数"),
+          React.createElement("select",{value:innings,onChange:e=>setInnings(Number(e.target.value)),style:fi},[5,6,7,9].map(n=>React.createElement("option",{key:n,value:n},`${n}回`)))
         ),
         React.createElement("div",{style:{marginBottom:10}},
-          React.createElement("div",{style:{fontSize:10,fontWeight:800,color:W.gray,marginBottom:4}},"笞費ｸ・逶ｸ謇九メ繝ｼ繝蜷・),
-          React.createElement("input",{type:"text",value:opp,onChange:e=>setOpp(e.target.value),placeholder:G.oppTeam||"繝√・繝蜷・,style:fi})
+          React.createElement("div",{style:{fontSize:10,fontWeight:800,color:W.gray,marginBottom:4}},"⚔️ 相手チーム名"),
+          React.createElement("input",{type:"text",value:opp,onChange:e=>setOpp(e.target.value),placeholder:G.oppTeam||"チーム名",style:fi})
         ),
         React.createElement("div",{},
-          React.createElement("div",{style:{fontSize:10,fontWeight:800,color:W.gray,marginBottom:8}},"匠 蜈域判 / 蠕梧判"),
+          React.createElement("div",{style:{fontSize:10,fontWeight:800,color:W.gray,marginBottom:8}},"🏠 先攻 / 後攻"),
           React.createElement("div",{style:{display:"flex",gap:8}},
-            [["蜈域判",true,W.green],["蠕梧判",false,W.red]].map(([txt,val,col])=>
+            [["先攻",true,W.green],["後攻",false,W.red]].map(([txt,val,col])=>
               React.createElement("button",{key:txt,onClick:()=>setBatFirst(val),style:{flex:1,padding:"12px 0",borderRadius:10,border:`2px solid ${batFirst===val?col:W.border}`,background:batFirst===val?col:"#f0f2f5",color:batFirst===val?"#fff":W.gray,fontFamily:"inherit",fontSize:14,fontWeight:900,cursor:"pointer"}},
-                batFirst===val?`笨・{txt}`:txt
+                batFirst===val?`✓${txt}`:txt
               )
             )
           )
@@ -3569,86 +3570,86 @@ function SetupWizard({ G, setG, pushG, setScreen, mode }) {
       )
     ),
     React.createElement("div",{style:{padding:"12px 16px",background:"#fff",borderTop:`1px solid ${W.border}`,flexShrink:0}},
-      nextBtn("谺｡縺ｸ 竊・繧ｹ繧ｿ繝｡繝ｳ蜈･蜉・,()=>setStep(2))
+      nextBtn("次へ → スタメン入力",()=>setStep(2))
     )
   );
 
   if(step===2){
     const upd=(i,f,v)=>setLineup(prev=>{const n=[...prev];n[i]={...n[i],[f]:v};return n;});
-    const posOpts=["","謚・,"謐・,"荳","莠・,"荳・,"驕・,"蟾ｦ","荳ｭ","蜿ｳ"];
+    const posOpts=["","投","捕","一","二","三","遊","左","中","右"];
     const selD=selPos?POS_DATA_W.find(p=>p.id===selPos):null;
     return React.createElement("div",{style:{background:W.bg,minHeight:"100vh",display:"flex",flexDirection:"column"}},
-      hdr("Step 2/3縲繧ｹ繧ｿ繝｡繝ｳ蜈･蜉・,()=>setStep(1)),
+      hdr("Step 2/3　スタメン入力",()=>setStep(1)),
       React.createElement("div",{style:{background:"#0d2040",padding:"8px 16px 4px",flexShrink:0}},
         React.createElement(LineupSetupField,{lineup:lineup.filter(p=>p.name&&p.pos),selectedPos:selPos,onTapPos:id=>setSelPos(p=>p===id?null:id)}),
         selPos&&React.createElement("div",{style:{textAlign:"center",fontSize:11,color:"#aac4f0",paddingBottom:6}},
-          `笆ｶ ${selD?selD.title:selPos}縲`,
-          (()=>{const idx=lineup.findIndex(p=>p.pos===selD?.lbl&&p.name);return idx>=0?React.createElement("span",{style:{color:W.gold,fontWeight:700}},`${lineup[idx].name} (${idx+1}逡ｪ)`):React.createElement("span",{style:{color:"rgba(255,255,255,.4)"}},"譛ｪ蜑ｲ蠖・);})()
+          `▶ ${selD?selD.title:selPos}　`,
+          (()=>{const idx=lineup.findIndex(p=>p.pos===selD?.lbl&&p.name);return idx>=0?React.createElement("span",{style:{color:W.gold,fontWeight:700}},`${lineup[idx].name} (${idx+1}番)`):React.createElement("span",{style:{color:"rgba(255,255,255,.4)"}},"未割当");})()
         )
       ),
       React.createElement("div",{style:{flex:1,overflowY:"auto",padding:"10px 12px"}},
-        React.createElement("div",{style:{fontSize:9,fontWeight:900,color:W.gray,letterSpacing:".12em",marginBottom:8}},"謇馴・・驕ｸ謇九・螳亥ｙ菴咲ｽｮ"),
+        React.createElement("div",{style:{fontSize:9,fontWeight:900,color:W.gray,letterSpacing:".12em",marginBottom:8}},"打順・選手・守備位置"),
         ...lineup.map((p,i)=>
           React.createElement("div",{key:i,style:{display:"flex",alignItems:"center",gap:5,marginBottom:5,background:"#fff",borderRadius:10,padding:"5px 8px",border:`1.5px solid ${selPos&&p.pos===selD?.lbl?W.gold:W.border}`,boxShadow:"0 1px 3px rgba(0,0,0,.04)"}},
             React.createElement("div",{style:{width:24,height:24,borderRadius:"50%",background:p.name?W.green:"#e8ecf0",color:p.name?"#fff":W.gray,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:900,flexShrink:0}},i+1),
-            React.createElement("input",{value:p.name,onChange:e=>upd(i,"name",e.target.value),placeholder:"驕ｸ謇句錐",style:{flex:1,border:`1px solid ${W.border}`,borderRadius:6,padding:"5px 7px",fontSize:13,fontFamily:"inherit",outline:"none",minWidth:0}}),
+            React.createElement("input",{value:p.name,onChange:e=>upd(i,"name",e.target.value),placeholder:"選手名",style:{flex:1,border:`1px solid ${W.border}`,borderRadius:6,padding:"5px 7px",fontSize:13,fontFamily:"inherit",outline:"none",minWidth:0}}),
             React.createElement("input",{value:p.num,onChange:e=>upd(i,"num",e.target.value),placeholder:"#",style:{width:36,border:`1px solid ${W.border}`,borderRadius:6,padding:"5px 4px",fontSize:12,fontFamily:"inherit",outline:"none",textAlign:"center"}}),
             React.createElement("select",{value:p.pos,onChange:e=>upd(i,"pos",e.target.value),style:{border:`1px solid ${W.border}`,borderRadius:6,padding:"5px 3px",fontSize:12,fontFamily:"inherit",outline:"none",background:"#fff"}},
-              posOpts.map(opt=>React.createElement("option",{key:opt,value:opt},opt||"螳亥ｙ"))
+              posOpts.map(opt=>React.createElement("option",{key:opt,value:opt},opt||"守備"))
             )
           )
         ),
         React.createElement("div",{style:{marginTop:10}},
-          React.createElement("div",{style:{fontSize:9,fontWeight:900,color:W.gray,letterSpacing:".12em",marginBottom:6}},"謗ｧ縺医Γ繝ｳ繝舌・"),
+          React.createElement("div",{style:{fontSize:9,fontWeight:900,color:W.gray,letterSpacing:".12em",marginBottom:6}},"控えメンバー"),
           ...bench.map((p,i)=>
             React.createElement("div",{key:i,style:{display:"flex",alignItems:"center",gap:5,marginBottom:5,background:"#f8fafc",borderRadius:10,padding:"5px 8px",border:`1px dashed ${W.border}`}},
-              React.createElement("div",{style:{width:24,height:24,borderRadius:"50%",background:"#e8ecf0",color:W.gray,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:900,flexShrink:0}},"謗ｧ"),
-              React.createElement("input",{value:p.name,onChange:e=>setBench(prev=>prev.map((b,j)=>j===i?{...b,name:e.target.value}:b)),placeholder:"謗ｧ縺磯∈謇句錐",style:{flex:1,border:`1px solid ${W.border}`,borderRadius:6,padding:"5px 7px",fontSize:13,fontFamily:"inherit",outline:"none",minWidth:0}}),
+              React.createElement("div",{style:{width:24,height:24,borderRadius:"50%",background:"#e8ecf0",color:W.gray,display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,fontWeight:900,flexShrink:0}},"控"),
+              React.createElement("input",{value:p.name,onChange:e=>setBench(prev=>prev.map((b,j)=>j===i?{...b,name:e.target.value}:b)),placeholder:"控え選手名",style:{flex:1,border:`1px solid ${W.border}`,borderRadius:6,padding:"5px 7px",fontSize:13,fontFamily:"inherit",outline:"none",minWidth:0}}),
               React.createElement("input",{value:p.num,onChange:e=>setBench(prev=>prev.map((b,j)=>j===i?{...b,num:e.target.value}:b)),placeholder:"#",style:{width:36,border:`1px solid ${W.border}`,borderRadius:6,padding:"5px 4px",fontSize:12,fontFamily:"inherit",outline:"none",textAlign:"center"}}),
-              React.createElement("button",{onClick:()=>setBench(prev=>prev.filter((_,j)=>j!==i)),style:{background:"none",border:"none",color:"#cc4444",fontSize:14,cursor:"pointer",padding:"0 4px",flexShrink:0}},"笨・)
+              React.createElement("button",{onClick:()=>setBench(prev=>prev.filter((_,j)=>j!==i)),style:{background:"none",border:"none",color:"#cc4444",fontSize:14,cursor:"pointer",padding:"0 4px",flexShrink:0}},"✕")
             )
           ),
           React.createElement("button",{onClick:()=>setBench(prev=>[...prev,{name:"",num:"",pos:"",ab:0,hits:0,rbi:0,runs:0,pitchCount:0}]),style:{width:"100%",padding:"8px",background:"none",border:`1.5px dashed ${W.border}`,borderRadius:10,color:W.gray,fontFamily:"inherit",fontSize:12,fontWeight:700,cursor:"pointer",marginTop:2}},
-            "+ 謗ｧ縺磯∈謇九ｒ霑ｽ蜉"
+            "+ 控え選手を追加"
           )
         )
       ),
       React.createElement("div",{style:{padding:"12px 16px",background:"#fff",borderTop:`1px solid ${W.border}`,flexShrink:0}},
-        nextBtn("谺｡縺ｸ 竊・遒ｺ隱・,()=>setStep(3))
+        nextBtn("次へ → 確認",()=>setStep(3))
       )
     );
   }
 
-  const oppName=(opp&&opp.trim())||G.oppTeam||"逶ｸ謇・;
+  const oppName=(opp&&opp.trim())||G.oppTeam||"相手";
   const filled=lineup.filter(p=>p.name).length;
   return React.createElement("div",{style:{background:W.bg,minHeight:"100vh",display:"flex",flexDirection:"column"}},
-    hdr("Step 3/3縲遒ｺ隱阪・隧ｦ蜷磯幕蟋・,()=>setStep(2)),
+    hdr("Step 3/3　確認・試合開始",()=>setStep(2)),
     React.createElement("div",{style:{flex:1,overflowY:"auto",padding:"12px 16px"}},
       React.createElement("div",{style:{background:W.navy,borderRadius:14,padding:"14px 16px",marginBottom:12,textAlign:"center"}},
-        React.createElement("div",{style:{fontSize:9,color:"#aac4f0",fontWeight:700,marginBottom:6}},[gameDate,gameLoc,gameTime,`${innings}蝗槫宛`].filter(Boolean).join(" ﾂｷ ")),
+        React.createElement("div",{style:{fontSize:9,color:"#aac4f0",fontWeight:700,marginBottom:6}},[gameDate,gameLoc,gameTime,`${innings}回制`].filter(Boolean).join(" · ")),
         React.createElement("div",{style:{fontSize:20,fontWeight:900,color:"#fff"}},G.ourTeam,React.createElement("span",{style:{color:"#aac4f0",fontSize:14,margin:"0 10px"}},"vs"),oppName),
         React.createElement("div",{style:{marginTop:8,display:"flex",justifyContent:"center",gap:8}},
-          React.createElement("span",{style:{background:batFirst?W.green:W.red,color:"#fff",borderRadius:100,padding:"3px 14px",fontSize:11,fontWeight:900}},batFirst?"蜈域判":"蠕梧判")
+          React.createElement("span",{style:{background:batFirst?W.green:W.red,color:"#fff",borderRadius:100,padding:"3px 14px",fontSize:11,fontWeight:900}},batFirst?"先攻":"後攻")
         )
       ),
       React.createElement("div",{style:{background:"#fff",borderRadius:14,padding:"12px 14px",marginBottom:12,boxShadow:"0 1px 6px rgba(0,0,0,.06)"}},
-        React.createElement("div",{style:{fontSize:9,fontWeight:900,color:W.gold,letterSpacing:".12em",marginBottom:10}},"繧ｹ繧ｿ繝｡繝ｳ"),
+        React.createElement("div",{style:{fontSize:9,fontWeight:900,color:W.gold,letterSpacing:".12em",marginBottom:10}},"スタメン"),
         ...lineup.map((p,i)=>
           React.createElement("div",{key:i,style:{display:"flex",alignItems:"center",gap:8,padding:"7px 0",borderBottom:i<8?`1px solid ${W.border}`:"none"}},
             React.createElement("div",{style:{width:22,height:22,borderRadius:"50%",background:p.name?W.green:"#e8ecf0",color:p.name?"#fff":W.gray,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:900,flexShrink:0}},i+1),
-            React.createElement("span",{style:{flex:1,fontSize:14,fontWeight:700,color:p.name?W.text:W.gray}},p.name||"(譛ｪ逋ｻ骭ｲ)"),
+            React.createElement("span",{style:{flex:1,fontSize:14,fontWeight:700,color:p.name?W.text:W.gray}},p.name||"(未登録)"),
             p.num&&React.createElement("span",{style:{fontSize:11,color:W.gray}},`#${p.num}`),
             React.createElement("span",{style:{width:26,textAlign:"center",fontSize:12,fontWeight:900,color:p.pos?W.blue:W.gray,background:p.pos?"#e8f0ff":"#f0f2f5",borderRadius:6,padding:"2px 4px"}},p.pos||"?")
           )
         )
       ),
       filled<9&&React.createElement("div",{style:{background:"#fff8e1",border:"1.5px solid #e6b800",borderRadius:10,padding:"10px 14px",marginBottom:12,fontSize:12,color:"#856400"}},
-        `笞ｾ 繧ｹ繧ｿ繝｡繝ｳ ${filled}/9莠ｺ縲よ悴蜈･蜉帙・縺ｾ縺ｾ隧ｦ蜷磯幕蟋九ｂ縺ｧ縺阪∪縺吶Ａ
+        `⚾ スタメン ${filled}/9人。未入力のまま試合開始もできます。`
       )
     ),
     React.createElement("div",{style:{padding:"14px 16px 24px",background:"#fff",borderTop:`1px solid ${W.border}`,flexShrink:0}},
       React.createElement("button",{onClick:handleStart,style:{width:"100%",padding:"18px 0",background:"linear-gradient(135deg,#1a7a3a,#2ca85a)",border:"none",borderRadius:14,color:"#fff",fontFamily:"inherit",fontSize:22,fontWeight:900,cursor:"pointer",boxShadow:"0 6px 20px rgba(26,122,58,.5)",letterSpacing:".05em"}},
-        "笞ｾ縲隧ｦ蜷磯幕蟋具ｼ・
+        "⚾　試合開始！"
       )
     )
   );
@@ -4459,26 +4460,26 @@ function App() {
       color: C.gray,
       marginTop: 2
     }
-  }, "（ver1）" /*#__PURE__*/React.createElement("div", {
+  }, "（ver1）")),  /*#__PURE__*/React.createElement("div", {
     style: { display:"flex", flexDirection:"column", gap:10, width:"100%", maxWidth:340 }
   },
     !isViewerOnly && /*#__PURE__*/React.createElement("div", {
       onClick: () => { setSetupMode("new"); setScreen("setup"); },
       style: { padding:"16px 20px", borderRadius:12, border:"2px solid #1a7a3a", background:"#f0faf3", cursor:"pointer", display:"flex", alignItems:"center", gap:14 }
-    }, React.createElement("span",{style:{fontSize:28}},"笞ｾ"), React.createElement("div",null,
-        React.createElement("div",{style:{fontSize:15,fontWeight:900,color:"#1a7a3a"}},"譁ｰ隕剰ｩｦ蜷医ｒ險ｭ螳・),
-        React.createElement("div",{style:{fontSize:11,color:"#6b7a8d",marginTop:2}},"繧ｦ繧｣繧ｶ繝ｼ繝峨〒繧ｹ繧ｿ繝｡繝ｳ繝ｻ險ｭ螳壹ｒ蜈･蜉・)
+    }, React.createElement("span",{style:{fontSize:28}},"⚾"), React.createElement("div",null,
+        React.createElement("div",{style:{fontSize:15,fontWeight:900,color:"#1a7a3a"}},"新規試合を設定"),
+        React.createElement("div",{style:{fontSize:11,color:"#6b7a8d",marginTop:2}},"ウィザードでスタメン・設定を入力")
       )
     ),
     !isViewerOnly && /*#__PURE__*/React.createElement("div", {
       onClick: () => { setSetupMode("rematch"); setScreen("setup"); },
       style: { padding:"16px 20px", borderRadius:12, border:"2px solid #e65100", background:"#fff8f0", cursor:"pointer", display:"flex", alignItems:"center", gap:14 }
-    }, React.createElement("span",{style:{fontSize:28}},"売"), React.createElement("div",null,
-        React.createElement("div",{style:{fontSize:15,fontWeight:900,color:"#e65100"}},"蜷後§驕ｸ謇九〒蜀崎ｩｦ蜷・),
-        React.createElement("div",{style:{fontSize:11,color:"#6b7a8d",marginTop:2}},"蜑阪・繧ｹ繧ｿ繝｡繝ｳ繧貞ｼ輔″邯吶＞縺ｧ譁ｰ縺励＞隧ｦ蜷・)
+    }, React.createElement("span",{style:{fontSize:28}},"🔄"), React.createElement("div",null,
+        React.createElement("div",{style:{fontSize:15,fontWeight:900,color:"#e65100"}},"同じ選手で再試合"),
+        React.createElement("div",{style:{fontSize:11,color:"#6b7a8d",marginTop:2}},"前のスタメンを引き継いで新しい試合")
       )
     )
-  ),)), (isViewerOnly ? [["viewer", "🏟", "試合速報", "リアルタイム速報（親御さん向け）", C.green, "#f0faf3"]] : [["staff", "📋", "スタッフ入力モード", "スコアを記録する（会場用）", C.gold, "#fffde7"], ["viewer", "🏟", "試合速報", "リアルタイム速報（親御さん向け）", C.green, "#f0faf3"]]).map(([m, ico, t, s, bc, bg]) => /*#__PURE__*/React.createElement("div", {
+  ),(isViewerOnly ? [["viewer", "🏟", "試合速報", "リアルタイム速報（親御さん向け）", C.green, "#f0faf3"]] : [["staff", "📋", "スタッフ入力モード", "スコアを記録する（会場用）", C.gold, "#fffde7"], ["viewer", "🏟", "試合速報", "リアルタイム速報（親御さん向け）", C.green, "#f0faf3"]]).map(([m, ico, t, s, bc, bg]) => /*#__PURE__*/React.createElement("div", {
     key: m,
     onClick: () => setScreen(m),
     style: {
