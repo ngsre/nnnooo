@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>三島ノースタイガース試合速報 ver3</title>
+  <title>三島ノースタイガース試合速報 ver4</title>
   <style>
     *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
     html,body{margin:0;padding:0;width:100%;overflow-x:hidden;}
@@ -57,7 +57,14 @@ function useFirebaseSync(initialG) {
 }
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 const INIT_G = {
-  ourTeam: "ノース",
+  ourTeam: (() => {
+    try {
+      const saved = localStorage.getItem("team_roster_2024");
+      return saved ? JSON.parse(saved).teamName || "ノース" : "ノース";
+    } catch (e) {
+      return "ノース";
+    }
+  })(),
   oppTeam: "相手",
   maxInnings: 7,
   batFirst: true,
@@ -2661,6 +2668,282 @@ function HistoryTab({
     }
   }, "\u5168\u5C65\u6B74\u3092\u524A\u9664"));
 }
+function TeamRosterTab({
+  showToast
+}) {
+  const [teamName, setTeamName] = useState("");
+  const [players, setPlayers] = useState([]);
+  const [editIdx, setEditIdx] = useState(null);
+  const [editName, setEditName] = useState("");
+  const [editNum, setEditNum] = useState("");
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("team_roster_2024");
+      if (saved) {
+        const data = JSON.parse(saved);
+        setTeamName(data.teamName || "");
+        setPlayers(data.players || []);
+      }
+    } catch (e) {}
+  }, []);
+  const saveRoster = () => {
+    try {
+      localStorage.setItem("team_roster_2024", JSON.stringify({
+        teamName,
+        players
+      }));
+      showToast("\uD83D\uDCBE \u4FDD\u5B58\u3057\u307E\u3057\u305F");
+    } catch (e) {
+      showToast("\u274C \u4FDD\u5B58\u5931\u6557");
+    }
+  };
+  const addPlayer = () => {
+    if (!editName.trim()) {
+      showToast("\u26A0\uFE0F \u540D\u524D\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+      return;
+    }
+    setPlayers([...players, {
+      name: editName.trim(),
+      num: editNum.trim()
+    }]);
+    setEditName("");
+    setEditNum("");
+    showToast("\u2795 \u8FFD\u52A0\u3057\u307E\u3057\u305F");
+  };
+  const deletePlayer = idx => {
+    setPlayers(players.filter((_, i) => i !== idx));
+    showToast("\uD83D\uDDD1\uFE0F \u524A\u9664\u3057\u307E\u3057\u305F");
+  };
+  const updatePlayer = idx => {
+    if (!editName.trim()) {
+      showToast("\u26A0\uFE0F \u540D\u524D\u3092\u5165\u529B\u3057\u3066\u304F\u3060\u3055\u3044");
+      return;
+    }
+    const updated = [...players];
+    updated[idx] = {
+      name: editName.trim(),
+      num: editNum.trim()
+    };
+    setPlayers(updated);
+    setEditIdx(null);
+    setEditName("");
+    setEditNum("");
+    showToast("\u270F\uFE0F \u66F4\u65B0\u3057\u307E\u3057\u305F");
+  };
+  const startEdit = idx => {
+    setEditIdx(idx);
+    setEditName(players[idx].name);
+    setEditNum(players[idx].num);
+  };
+  const C = {
+    blue: "#1e88e5",
+    gray: "#6b7a8d",
+    border: "#d0d7e0"
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "12px 16px",
+      maxWidth: 600,
+      margin: "0 auto"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 16
+    }
+  }, /*#__PURE__*/React.createElement("label", {
+    style: {
+      display: "block",
+      fontSize: 12,
+      fontWeight: 700,
+      color: C.gray,
+      marginBottom: 4
+    }
+  }, "\u30C1\u30FC\u30E0\u540D"), /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    value: teamName,
+    onChange: e => setTeamName(e.target.value),
+    placeholder: "\u4F8B\uFF1A\u30CE\u30FC\u30B9\u5C11\u5E74\u91CE\u7403\u30AF\u30E9\u30D6",
+    style: {
+      width: "100%",
+      padding: "8px 12px",
+      fontSize: 14,
+      border: `1.5px solid ${C.border}`,
+      borderRadius: 8,
+      fontFamily: "inherit"
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 700,
+      color: C.gray,
+      marginBottom: 8
+    }
+  }, "\u9078\u624B\u540D\u7C3F\uFF08", players.length, "\u540D\uFF09"), players.map((p, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    style: {
+      display: "flex",
+      alignItems: "center",
+      gap: 8,
+      padding: "6px 8px",
+      background: editIdx === i ? "#fff8e1" : "#fff",
+      border: `1px solid ${C.border}`,
+      borderRadius: 6,
+      marginBottom: 4
+    }
+  }, editIdx === i ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    value: editNum,
+    onChange: e => setEditNum(e.target.value),
+    placeholder: "\u80CC\u756A\u53F7",
+    style: {
+      width: 60,
+      padding: "4px 6px",
+      fontSize: 13,
+      border: `1px solid ${C.border}`,
+      borderRadius: 4
+    }
+  }), /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    value: editName,
+    onChange: e => setEditName(e.target.value),
+    placeholder: "\u540D\u524D",
+    style: {
+      flex: 1,
+      padding: "4px 6px",
+      fontSize: 13,
+      border: `1px solid ${C.border}`,
+      borderRadius: 4
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: () => updatePlayer(i),
+    style: {
+      padding: "4px 10px",
+      fontSize: 11,
+      background: C.blue,
+      color: "#fff",
+      border: "none",
+      borderRadius: 4,
+      cursor: "pointer",
+      fontWeight: 700
+    }
+  }, "\u4FDD\u5B58"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setEditIdx(null);
+      setEditName("");
+      setEditNum("");
+    },
+    style: {
+      padding: "4px 8px",
+      fontSize: 11,
+      background: "#f0f2f5",
+      color: C.gray,
+      border: "none",
+      borderRadius: 4,
+      cursor: "pointer"
+    }
+  }, "\u30AD\u30E3\u30F3\u30BB\u30EB")) : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 60,
+      fontSize: 13,
+      fontWeight: 700,
+      color: "#9a7a42"
+    }
+  }, p.num ? `#${p.num}` : "-"), /*#__PURE__*/React.createElement("span", {
+    style: {
+      flex: 1,
+      fontSize: 14,
+      fontWeight: 700
+    }
+  }, p.name), /*#__PURE__*/React.createElement("button", {
+    onClick: () => startEdit(i),
+    style: {
+      padding: "4px 10px",
+      fontSize: 11,
+      background: "#f0f5ff",
+      color: C.blue,
+      border: `1px solid ${C.blue}`,
+      borderRadius: 4,
+      cursor: "pointer",
+      fontWeight: 700
+    }
+  }, "\u7DE8\u96C6"), /*#__PURE__*/React.createElement("button", {
+    onClick: () => deletePlayer(i),
+    style: {
+      padding: "4px 8px",
+      fontSize: 11,
+      background: "#fff0f0",
+      color: "#d32f2f",
+      border: "1px solid #d32f2f",
+      borderRadius: 4,
+      cursor: "pointer"
+    }
+  }, "\u524A\u9664")))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      marginTop: 8
+    }
+  }, /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    value: editNum,
+    onChange: e => setEditNum(e.target.value),
+    placeholder: "\u80CC\u756A\u53F7",
+    disabled: editIdx !== null,
+    style: {
+      width: 80,
+      padding: "6px 8px",
+      fontSize: 13,
+      border: `1.5px solid ${C.border}`,
+      borderRadius: 6,
+      opacity: editIdx !== null ? 0.5 : 1
+    }
+  }), /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    value: editName,
+    onChange: e => setEditName(e.target.value),
+    placeholder: "\u540D\u524D",
+    disabled: editIdx !== null,
+    style: {
+      flex: 1,
+      padding: "6px 8px",
+      fontSize: 13,
+      border: `1.5px solid ${C.border}`,
+      borderRadius: 6,
+      opacity: editIdx !== null ? 0.5 : 1
+    }
+  }), /*#__PURE__*/React.createElement("button", {
+    onClick: addPlayer,
+    disabled: editIdx !== null,
+    style: {
+      padding: "6px 14px",
+      fontSize: 12,
+      background: editIdx !== null ? "#f0f2f5" : C.blue,
+      color: editIdx !== null ? C.gray : "#fff",
+      border: "none",
+      borderRadius: 6,
+      cursor: editIdx !== null ? "not-allowed" : "pointer",
+      fontWeight: 700
+    }
+  }, "\u8FFD\u52A0"))), /*#__PURE__*/React.createElement("button", {
+    onClick: saveRoster,
+    style: {
+      width: "100%",
+      padding: "10px 0",
+      fontSize: 14,
+      background: "#1a7a3a",
+      color: "#fff",
+      border: "none",
+      borderRadius: 8,
+      cursor: "pointer",
+      fontWeight: 900,
+      marginTop: 16
+    }
+  }, "\uD83D\uDCBE \u4FDD\u5B58"));
+}
 function ConfigPanel({
   G,
   upd,
@@ -4251,7 +4534,7 @@ function App() {
       color: C.gray,
       marginTop: 2
     }
-  }, "（ver3）")), (isViewerOnly ? [["viewer", "🏟", "試合速報", "リアルタイム速報（親御さん向け）", C.green, "#f0faf3"]] : [["staff", "📋", "スタッフ入力モード", "スコアを記録する（会場用）", C.gold, "#fffde7"], ["viewer", "🏟", "試合速報", "リアルタイム速報（親御さん向け）", C.green, "#f0faf3"]]).map(([m, ico, t, s, bc, bg]) => /*#__PURE__*/React.createElement("div", {
+  }, "（ver4）")), (isViewerOnly ? [["viewer", "🏟", "試合速報", "リアルタイム速報（親御さん向け）", C.green, "#f0faf3"]] : [["staff", "📋", "スタッフ入力モード", "スコアを記録する（会場用）", C.gold, "#fffde7"], ["viewer", "🏟", "試合速報", "リアルタイム速報（親御さん向け）", C.green, "#f0faf3"]]).map(([m, ico, t, s, bc, bg]) => /*#__PURE__*/React.createElement("div", {
     key: m,
     onClick: () => setScreen(m),
     style: {
@@ -5757,7 +6040,7 @@ function App() {
       marginBottom: 14,
       textAlign: "center"
     }
-  }, "\u30E1\u30CB\u30E5\u30FC"), [["⚡", "入力画面", "live", "#fffde7", C.gold, ""], ["👥", "選手管理", "lineup", "#f0f5ff", C.blue, "試合開始前に設定必須"], ["⚙️", "設定", "config", "#f8fafc", C.gray, ""], ["📚", "過去の試合", "history", "#f0f0ff", "#5c35cc", ""]].map(([ico, lbl, id, bg, col, note]) => /*#__PURE__*/React.createElement("button", {
+  }, "\u30E1\u30CB\u30E5\u30FC"), [["⚡", "入力画面", "live", "#fffde7", C.gold, ""], ["👥", "選手交代", "lineup", "#f0f5ff", C.blue, ""], ["⚙️", "試合設定", "config", "#f8fafc", C.gray, ""], ["👕", "本年度チーム設定", "roster", "#fff4e6", "#f97316", ""], ["📚", "過去の試合", "history", "#f0f0ff", "#5c35cc", ""]].map(([ico, lbl, id, bg, col, note]) => /*#__PURE__*/React.createElement("button", {
     key: id,
     onClick: () => {
       setTab(id);
@@ -8087,6 +8370,10 @@ function App() {
     upd: upd,
     showToast: showToast,
     snap: snap
+  })), tab === "roster" && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: sec
+  }, "本年度チーム設定"), /*#__PURE__*/React.createElement(TeamRosterTab, {
+    showToast: showToast
   })), tab === "history" && /*#__PURE__*/React.createElement(HistoryTab, {
     firebaseHist: firebaseHist
   })));
